@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bank Account Simulator</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f7fb; margin:0; color:#172033; }
+    .container { max-width:900px; margin:40px auto; padding:24px; }
+    .card { background:white; border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 6px 24px rgba(0,0,0,.08); }
+    h1 { margin-top:0; }
+    .balance { font-size:2.2rem; font-weight:700; margin:8px 0 0; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    input, button { width:100%; box-sizing:border-box; padding:12px; border-radius:8px; border:1px solid #ccd3df; margin-top:8px; }
+    button { border:0; cursor:pointer; background:#1f4fbf; color:white; font-weight:700; }
+    .withdraw button { background:#9b2c2c; }
+    .success { background:#e7f7ed; color:#176b36; padding:10px; border-radius:8px; }
+    .error { background:#fdeaea; color:#8a1f1f; padding:10px; border-radius:8px; }
+    li { margin-bottom:8px; }
+    @media(max-width:700px){ .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>🏦 Bank Account Simulator</h1>
+    <p>Menu-driven banking operations with validation and transaction history.</p>
+    <div>Available Balance</div>
+    <div class="balance">₹{{ "%.2f"|format(balance) }}</div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="{{ category }}">{{ message }}</div><br>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="grid">
+    <div class="card">
+      <h2>Deposit</h2>
+      <form method="post" action="{{ url_for('deposit') }}">
+        <label>Amount (₹)</label>
+        <input name="amount" type="number" min="0.01" step="0.01" required>
+        <button type="submit">Deposit Money</button>
+      </form>
+    </div>
+
+    <div class="card withdraw">
+      <h2>Withdraw</h2>
+      <form method="post" action="{{ url_for('withdraw') }}">
+        <label>Amount (₹)</label>
+        <input name="amount" type="number" min="0.01" step="0.01" required>
+        <button type="submit">Withdraw Money</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Transaction History</h2>
+    {% if transactions %}
+      <ol>
+        {% for transaction in transactions %}
+          <li>{{ transaction }}</li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p>No transactions yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <strong>Health check:</strong> <a href="/health">/health</a>
+  </div>
+</div>
+</body>
+</html>
